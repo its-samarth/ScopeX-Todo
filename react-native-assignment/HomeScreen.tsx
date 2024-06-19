@@ -1,35 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-  Button,
   SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   TextInput,
   View,
-  useColorScheme,
+  TouchableOpacity,
+  Button,
 } from 'react-native';
-
-import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { addTodoItem, deleteTodoItem, getTodoItems } from './helper';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {faMoon, faSun} from '@fortawesome/free-solid-svg-icons';
+import {addTodoItem, deleteTodoItem, getTodoItems} from './helper';
 
 function Homescreen(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  // Define your color scheme
   const colors = {
     blue: '#007AFF',
     black: '#000000',
     white: '#FFFFFF',
     grey: '#808080',
+    darkblue: '#054173',
   };
 
-  const [backgroundColor, setBackgroundColor] = useState(colors.white);
+  const [backgroundColor, setBackgroundColor] = useState(colors.darkblue);
 
   const toggleBackgroundColor = () => {
     setBackgroundColor(prevColor =>
-      prevColor === colors.white ? colors.black : colors.white,
+      prevColor === colors.white ? colors.darkblue : colors.white,
     );
   };
 
@@ -44,21 +41,40 @@ function Homescreen(): JSX.Element {
     getTodoItems(0, 100).then(items => setTodoItems(items));
   }, []);
 
-  // Determine text color based on the background color
-  const textColor = backgroundColor === colors.white ? colors.black : colors.white;
+  const textColor =
+    backgroundColor === colors.white ? colors.black : colors.white;
 
   return (
     <SafeAreaView style={[styles.safeArea, backgroundStyle]}>
-     
       <ScrollView contentInsetAdjustmentBehavior="automatic">
-        <View style={styles.sectionContainer}>
-          <Text style={[styles.sectionTitle, { color: colors.blue }]}>SCOPEX <Text style={[styles.sectionTitle, { color: textColor }]}>TODO</Text></Text>
-          <Button title="Toggle Background" onPress={toggleBackgroundColor} />
+        <View
+          style={[
+            styles.sectionContainer,
+            {
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            },
+          ]}>
+          <Text style={[styles.sectionTitle, {color: colors.blue}]}>
+            SCOPEX{' '}
+            <Text style={[styles.sectionTitle, {color: textColor}]}>TODO</Text>
+          </Text>
+          <TouchableOpacity onPress={toggleBackgroundColor}>
+            <FontAwesomeIcon
+              icon={backgroundColor === colors.white ? faSun :faMoon }
+              size={30}
+              color={textColor}
+            />
+          </TouchableOpacity>
         </View>
+
         <View style={styles.sectionContainer}>
           {todoItems.map((item: any) => (
             <View key={item.id} style={styles.todoItem}>
-              <Text style={[styles.sectionDescription, { color: textColor }]}>{item.title}</Text>
+              <Text style={[styles.sectionDescription, {color: textColor}]}>
+                {item.title}
+              </Text>
               <Button
                 title="Delete"
                 onPress={() => {
@@ -72,9 +88,12 @@ function Homescreen(): JSX.Element {
             </View>
           ))}
         </View>
-        <View style={[styles.sectionContainer,{justifyContent:'flex-end'}]}>
+        <View style={[styles.sectionContainer, styles.bottomContainer]}>
           <TextInput
-            style={[styles.sectionDescription, { color: textColor,fontSize: 22,fontStyle:'italic'  }]}
+            style={[
+              styles.sectionDescription,
+              {color: textColor, fontSize: 22, fontStyle: 'italic'},
+            ]}
             placeholder="Add your to-do item(s)"
             placeholderTextColor={textColor}
             onChange={e => setNewTodoItem(e.nativeEvent.text)}
@@ -108,7 +127,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   sectionDescription: {
-    flexDirection:'row',
+    flexDirection: 'row',
     marginTop: 8,
     fontSize: 18,
     fontWeight: '400',
@@ -119,6 +138,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     padding: 8,
     borderBottomColor: 'gray', // Use colors.grey for grey color
+  },
+  bottomContainer: {
+    justifyContent: 'flex-end',
+    marginBottom: 32,
   },
 });
 

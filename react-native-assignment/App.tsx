@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { NavigationContainer } from '@react-navigation/native';
 import { Login } from './src/screens/Login';
@@ -40,13 +40,35 @@ const HomeTabNavigator = () => {
 };
 
 const App = () => {
-  
+  const [initialRoute, setInitialRoute] = useState(null);
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: '475127014593-jqua44j0nk8uikk6mtlkigqnqk043eqn.apps.googleusercontent.com', // Replace with your web client ID
+    });
+
+    const checkUserLoggedIn = async () => {
+      try {
+        const userInfo = await GoogleSignin.getCurrentUser();
+        setInitialRoute(userInfo ? 'HomeScreen' : 'Test');
+      } catch (error) {
+        console.log('Error checking user login status: ', error);
+        setInitialRoute('Test');
+      }
+    };
+
+    checkUserLoggedIn();
+  }, []);
+
+  if (initialRoute === null) {
+    return null; // or a loading screen
+  }
  
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Test" component={Test} />
-        <Stack.Screen name="Login" component={Login} />
+      
         <Stack.Screen name="HomeScreen" component={HomeTabNavigator} />
       </Stack.Navigator>
     </NavigationContainer>

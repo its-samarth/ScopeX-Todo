@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { TouchableOpacity, Text, TextInput, View, StyleSheet } from 'react-native';
 import auth from '@react-native-firebase/auth';
+import { useNavigation } from '@react-navigation/native';
 
 export const Login = () => {
   function PhoneSignIn() {
     // If null, no SMS has been sent
     const [confirm, setConfirm] = useState(null);
+    const navigation = useNavigation();
 
     // Verification code (OTP - One-Time-Passcode)
     const [code, setCode] = useState('');
@@ -14,6 +16,7 @@ export const Login = () => {
     function onAuthStateChanged(user) {
       if (user) {
         console.log('User has logged in:', user);
+        navigation.navigate('HomeScreen');
         // Hide the component(s) for entering the code or navigate away from this screen
         // Display a success message
       }

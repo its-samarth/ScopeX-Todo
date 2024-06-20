@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Homescreen from './HomeScreen'
 import { NavigationContainer } from '@react-navigation/native';
 import { Login } from './Login';
@@ -15,17 +15,7 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const HomeTabNavigator = () => {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }} 
-     tabBarOptions={{
-      activeTintColor: 'blue', // Color of tab when pressed
-      inactiveTintColor: 'gray', // Color of tab when not pressed
-      style: {
-        backgroundColor: 'blue', // Background color of tab bar
-      },
-      labelStyle: {
-        fontSize: 12, // Font size of tab labels
-      },
-    }}>
+    <Tab.Navigator screenOptions={{ headerShown: false }} >
       <Tab.Screen
         name="Home"
         component={Homescreen}
@@ -49,6 +39,8 @@ const HomeTabNavigator = () => {
 };
 
 const App = () => {
+  
+ 
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>

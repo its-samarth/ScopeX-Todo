@@ -10,8 +10,9 @@ import {
   Button,
 } from 'react-native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faMoon, faSun} from '@fortawesome/free-solid-svg-icons';
+import {faMoon, faSun, faTrash} from '@fortawesome/free-solid-svg-icons';
 import {addTodoItem, deleteTodoItem, getTodoItems} from './helper';
+import ErrorModal from './ErrorModal';
 
 function Homescreen(): JSX.Element {
   const colors = {
@@ -20,6 +21,7 @@ function Homescreen(): JSX.Element {
     white: '#FFFFFF',
     grey: '#808080',
     darkblue: '#054173',
+    red: '#e6556d',
   };
 
   const [backgroundColor, setBackgroundColor] = useState(colors.darkblue);
@@ -36,6 +38,8 @@ function Homescreen(): JSX.Element {
 
   const [todoItems, setTodoItems] = useState([]);
   const [newTodoItem, setNewTodoItem] = useState('');
+  const [error, setError] = useState<string>(''); // State to hold error message
+  const [modalVisible, setModalVisible] = useState<boolean>(false); // State to control modal visibility
 
   useEffect(() => {
     getTodoItems(0, 100).then(items => setTodoItems(items));
@@ -62,7 +66,7 @@ function Homescreen(): JSX.Element {
           </Text>
           <TouchableOpacity onPress={toggleBackgroundColor}>
             <FontAwesomeIcon
-              icon={backgroundColor === colors.white ? faSun :faMoon }
+              icon={backgroundColor === colors.white ? faSun : faMoon}
               size={30}
               color={textColor}
             />
@@ -71,23 +75,38 @@ function Homescreen(): JSX.Element {
 
         <View style={styles.sectionContainer}>
           {todoItems.map((item: any) => (
-            <View key={item.id} style={styles.todoItem}>
+            <View
+              key={item.id}
+              style={[
+                styles.todoItem,
+                {
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                },
+              ]}>
               <Text style={[styles.sectionDescription, {color: textColor}]}>
                 {item.title}
               </Text>
-              <Button
-                title="Delete"
+              <TouchableOpacity
                 onPress={() => {
-                  deleteTodoItem(item.id).then(() => {
+                  deleteTodoItem(item.id)
+                  .then(() => {
                     getTodoItems(0, 10).then(items => {
                       setTodoItems(items);
                     });
+                  }).catch(error => {
+                    console.error('Error adding todo item:', error);
+                    setError(error.message); 
+                    setModalVisible(true); // Show modal
                   });
-                }}
-              />
+                }}>
+                <FontAwesomeIcon icon={faTrash} size={24} color={colors.red} />
+              </TouchableOpacity>
             </View>
           ))}
         </View>
+
         <View style={[styles.sectionContainer, styles.bottomContainer]}>
           <TextInput
             style={[
@@ -101,14 +120,27 @@ function Homescreen(): JSX.Element {
           <Button
             title="Add"
             onPress={() => {
-              addTodoItem(newTodoItem).then(() => {
-                getTodoItems(0, 10).then(items => {
-                  setTodoItems(items);
+              addTodoItem(newTodoItem)
+                .then(() => {
+                  getTodoItems(0, 10).then(items => {
+                    setTodoItems(items);
+                  });
+                })
+                .catch(error => {                  
+                  setError(error.message); 
+                  setModalVisible(true); // Show modal
                 });
-              });
             }}
           />
         </View>
+        <ErrorModal
+          visible={modalVisible}
+          error={error}
+          onClose={() => {
+            setModalVisible(false); // Hide modal
+            setError(''); // Clear error message
+          }}
+        />
       </ScrollView>
     </SafeAreaView>
   );

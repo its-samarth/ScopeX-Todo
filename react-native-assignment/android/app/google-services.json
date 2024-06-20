@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "475127014593",
+    "project_id": "scopex-todo",
+    "storage_bucket": "scopex-todo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:475127014593:android:44ab1d79ba119eadb36040",
+        "android_client_info": {
+          "package_name": "com.awesomeproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "475127014593-au9ftcuhml0uqmjgl933phv2v202npv1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.awesomeproject",
+            "certificate_hash": "621828279bd75f310929453bb3d5f2f9586ffb29"
+          }
+        },
+        {
+          "client_id": "475127014593-jqua44j0nk8uikk6mtlkigqnqk043eqn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXC6crVv5Nre8CeRn08DOYXDvtr0IReQM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "475127014593-jqua44j0nk8uikk6mtlkigqnqk043eqn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

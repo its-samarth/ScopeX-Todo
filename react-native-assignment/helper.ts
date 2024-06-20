@@ -3,7 +3,7 @@
 //
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-type TodoItem = {
+export type TodoItem = {
   id: string;
   title: string;
   done: boolean;

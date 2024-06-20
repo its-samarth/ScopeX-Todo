@@ -1,15 +1,16 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React, { useEffect } from 'react'
-import Homescreen from './HomeScreen'
+
 import { NavigationContainer } from '@react-navigation/native';
-import { Login } from './Login';
+import { Login } from './src/screens/Login';
 import { createStackNavigator } from '@react-navigation/stack';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import Test from './test';
+import Test from './src/screens/test';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHome, faUser } from '@fortawesome/free-solid-svg-icons';
-import Profile from './Profile';
+import Profile from './src/screens/Profile';
+import Homescreen from './src/screens/HomeScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();

@@ -16,8 +16,9 @@ import {
   faSun,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
-import {addTodoItem, deleteTodoItem, getTodoItems} from './helper';
-import ErrorModal from './ErrorModal';
+import ErrorModal from '../../ErrorModal';
+import { deleteTodoItem,addTodoItem, getTodoItems, TodoItem } from '../../helper';
+
 
 function Homescreen(): JSX.Element {
   const colors = {
@@ -41,7 +42,7 @@ function Homescreen(): JSX.Element {
     backgroundColor: backgroundColor,
   };
 
-  const [todoItems, setTodoItems] = useState([]);
+  const [todoItems, setTodoItems] = useState<TodoItem[]>([]);
   const [newTodoItem, setNewTodoItem] = useState('');
   const [error, setError] = useState<string>(''); // State to hold error message
   const [modalVisible, setModalVisible] = useState<boolean>(false); // State to control modal visibility

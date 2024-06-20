@@ -1,0 +1,5 @@
+
+  storeFile file('your-keystore-name.keystore')
+            storePassword 'samarth'
+            keyAlias 'your-alias-name'
+            keyPassword 'samarth'

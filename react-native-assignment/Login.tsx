@@ -1,101 +1,103 @@
-import React from 'react';
-import {View, Text, StyleSheet, Alert} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { TouchableOpacity, Text, TextInput, View, StyleSheet } from 'react-native';
 import auth from '@react-native-firebase/auth';
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-  statusCodes,
-} from '@react-native-google-signin/google-signin';
-import {useNavigation} from '@react-navigation/native';
 
 export const Login = () => {
-  const navigation = useNavigation();
-  auth()
-  .createUserWithEmailAndPassword('samarthbackup21@gmail.com', 'Wei5Sohniech4sae')
-  .then(() => {
-    console.log('User account created & signed in!');
-  })
-  .catch(error => {
-    if (error.code === 'auth/email-already-in-use') {
-      console.log('That email address is already in use!');
-    }
+  function PhoneSignIn() {
+    // If null, no SMS has been sent
+    const [confirm, setConfirm] = useState(null);
 
-    if (error.code === 'auth/invalid-email') {
-      console.log('That email address is invalid!');
-    }
+    // Verification code (OTP - One-Time-Passcode)
+    const [code, setCode] = useState('');
 
-    console.error(error);
-  });
-  const onGoogleButtonPress = async () => {
-    try {
-      console.log('Checking Google Play Services availability...');
-      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-      console.log('Google Play Services are available');
-
-      console.log('Attempting to sign in...');
-      //const userInfo = await GoogleSignin.signIn();
-      //console.log('User info obtained:', userInfo);
-
-      //console.log('Creating Google credential...');
-      //const googleCredential = auth.GoogleAuthProvider.credential(userInfo.idToken);
-
-      const {idToken} = await GoogleSignin.signIn();
-        console.log("idtoken");
-        
-      // Create a Google credential with the token
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-
-      // Sign-in the user with the credential
-      return auth().signInWithCredential(googleCredential);
-      navigation.navigate('HomeScreen');
-
-      console.log('Signing in with Google credential...');
-      //await auth().signInWithCredential(googleCredential);
-
-      console.log('Signed in with Google! Navigating to HomeScreen...');
-      
-    } catch (error) {
-      console.error('Google sign-in error:', error);
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        console.log('Google sign in cancelled');
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        console.log('Google sign in is already in progress');
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        Alert.alert('Error', 'Play services are not available');
-      } else {
-        Alert.alert('Error', 'Unknown error occurred');
+    // Handle login
+    function onAuthStateChanged(user) {
+      if (user) {
+        console.log('User has logged in:', user);
+        // Hide the component(s) for entering the code or navigate away from this screen
+        // Display a success message
       }
     }
-  };
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login Screen</Text>
-      <GoogleSigninButton
-        style={styles.googleButton}
-        size={GoogleSigninButton.Size.Wide}
-        color={GoogleSigninButton.Color.Dark}
-        onPress={onGoogleButtonPress}
-      />
-    </View>
-  );
+    useEffect(() => {
+      const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+      return () => subscriber(); // Unsubscribe on unmount
+    }, []);
+
+    // Handle the button press
+    async function signInWithPhoneNumber(phoneNumber) {
+      console.log('Attempting to sign in with phone number:', phoneNumber);
+      const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+      setConfirm(confirmation);
+    }
+
+    async function confirmCode() {
+      try {
+        console.log('Attempting to confirm code:', code);
+        await confirm.confirm(code);
+      } catch (error) {
+        console.log('Invalid code.', error);
+      }
+    }
+
+    if (!confirm) {
+      return (
+        <TouchableOpacity
+          onPress={() => {
+            console.log('Phone Number Sign In button pressed');
+            signInWithPhoneNumber('+91 70467 55055');
+          }}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Phone Number Sign In</Text>
+        </TouchableOpacity>
+      );
+    }
+
+    return (
+      <View>
+        <TextInput
+          value={code}
+          onChangeText={text => {
+            console.log('Code input changed:', text);
+            setCode(text);
+          }}
+          style={styles.input}
+        />
+        <TouchableOpacity
+          onPress={() => {
+            console.log('Confirm Code button pressed');
+            confirmCode();
+          }}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Confirm Code</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  return <PhoneSignIn />;
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
+  button: {
+    backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 5,
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    marginVertical: 10,
   },
-  title: {
-    fontSize: 24,
-    marginBottom: 30,
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
   },
-  googleButton: {
-    width: 192,
-    height: 48,
-    marginTop: 20,
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 10,
   },
 });
 

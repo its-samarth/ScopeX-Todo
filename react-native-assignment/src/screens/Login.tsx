@@ -16,7 +16,7 @@ export const Login = () => {
     function onAuthStateChanged(user) {
       if (user) {
         console.log('User has logged in:', user);
-        navigation.navigate('HomeScreen');
+        //navigation.replace('HomeScreen');
         // Hide the component(s) for entering the code or navigate away from this screen
         // Display a success message
       }

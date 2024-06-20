@@ -13,7 +13,7 @@ const Profile = () => {
 
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com', // Replace with your web client ID
+      webClientId: '475127014593-jqua44j0nk8uikk6mtlkigqnqk043eqn.apps.googleusercontent.com', // Replace with your web client ID
     });
 
     const fetchUserProfile = async () => {
@@ -35,7 +35,7 @@ const Profile = () => {
       await GoogleSignin.revokeAccess();
       await GoogleSignin.signOut();
       setUser(null); 
-      //navigation.replace('Login'as never);
+      navigation.replace('Test');
       console.log(' signing out success ',user);
     } catch (error) {
       console.error('Error signing out: ', error);

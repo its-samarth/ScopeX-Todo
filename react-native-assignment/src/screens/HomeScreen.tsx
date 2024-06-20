@@ -100,7 +100,7 @@ function Homescreen(): JSX.Element {
                 onPress={() => {
                   deleteTodoItem(item.id)
                     .then(() => {
-                      getTodoItems(0, 10).then(items => {
+                      getTodoItems(0, 20).then(items => {
                         setTodoItems(items);
                       });
                     })
@@ -131,7 +131,7 @@ function Homescreen(): JSX.Element {
             onPress={() => {
               addTodoItem(newTodoItem)
                 .then(() => {
-                  getTodoItems(0, 10).then(items => {
+                  getTodoItems(0,100).then(items => {
                     setTodoItems(items);
                   });
                 })

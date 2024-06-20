@@ -15,24 +15,7 @@ GoogleSignin.configure({
   });
 export const Test = () => {
   const navigation = useNavigation();
-  /** 
-  auth()
-  .createUserWithEmailAndPassword('samarthbackup21@gmail.com', 'Wei5Sohniech4sae')
-  .then(() => {
-    console.log('User account created & signed in!');
-  })
-  .catch(error => {
-    if (error.code === 'auth/email-already-in-use') {
-      console.log('That email address is already in use!');
-    }
-
-    if (error.code === 'auth/invalid-email') {
-      console.log('That email address is invalid!');
-    }
-
-    console.error(error);
-  });
-  */
+ 
 
   const onGoogleButtonPress = async () => {
     try {
@@ -48,14 +31,14 @@ export const Test = () => {
       //const googleCredential = auth.GoogleAuthProvider.credential(userInfo.idToken);
 
       const {idToken} = await GoogleSignin.signIn();
-        console.log("trhf "+idToken);
+       // console.log("trhf "+idToken);
         
       // Create a Google credential with the token
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
       // Sign-in the user with the credential
-      return auth().signInWithCredential(googleCredential);
-      navigation.navigate('HomeScreen');
+       auth().signInWithCredential(googleCredential);
+      navigation.replace('HomeScreen');
 
       console.log('Signing in with Google credential...');
       //await auth().signInWithCredential(googleCredential);

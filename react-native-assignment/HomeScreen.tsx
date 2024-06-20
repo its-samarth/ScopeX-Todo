@@ -10,7 +10,12 @@ import {
   Button,
 } from 'react-native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faMoon, faSun, faTrash} from '@fortawesome/free-solid-svg-icons';
+import {
+  faMoon,
+  faRightFromBracket,
+  faSun,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons';
 import {addTodoItem, deleteTodoItem, getTodoItems} from './helper';
 import ErrorModal from './ErrorModal';
 
@@ -51,27 +56,29 @@ function Homescreen(): JSX.Element {
   return (
     <SafeAreaView style={[styles.safeArea, backgroundStyle]}>
       <ScrollView contentInsetAdjustmentBehavior="automatic">
-        <View
-          style={[
-            styles.sectionContainer,
-            {
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            },
-          ]}>
-          <Text style={[styles.sectionTitle, {color: colors.blue}]}>
-            SCOPEX{' '}
-            <Text style={[styles.sectionTitle, {color: textColor}]}>TODO</Text>
-          </Text>
+      <View style={[styles.sectionContainer, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
+        <Text style={[styles.sectionTitle, { color: colors.blue }]}>
+          SCOPEX{' '}
+          <Text style={[styles.sectionTitle, { color: textColor }]}>TODO</Text>
+        </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableOpacity onPress={toggleBackgroundColor}>
             <FontAwesomeIcon
-              icon={backgroundColor === colors.white ? faSun : faMoon}
+              icon={backgroundColor === 'white' ? faSun : faMoon}
               size={30}
               color={textColor}
+              style={{ marginRight: 10 }} // Adjust the spacing between icons
+            />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <FontAwesomeIcon
+              icon={faRightFromBracket}
+              size={20}
+              color={'black'}
             />
           </TouchableOpacity>
         </View>
+      </View>
 
         <View style={styles.sectionContainer}>
           {todoItems.map((item: any) => (
@@ -91,15 +98,16 @@ function Homescreen(): JSX.Element {
               <TouchableOpacity
                 onPress={() => {
                   deleteTodoItem(item.id)
-                  .then(() => {
-                    getTodoItems(0, 10).then(items => {
-                      setTodoItems(items);
+                    .then(() => {
+                      getTodoItems(0, 10).then(items => {
+                        setTodoItems(items);
+                      });
+                    })
+                    .catch(error => {
+                      console.error('Error adding todo item:', error);
+                      setError(error.message);
+                      setModalVisible(true); // Show modal
                     });
-                  }).catch(error => {
-                    console.error('Error adding todo item:', error);
-                    setError(error.message); 
-                    setModalVisible(true); // Show modal
-                  });
                 }}>
                 <FontAwesomeIcon icon={faTrash} size={24} color={colors.red} />
               </TouchableOpacity>
@@ -126,8 +134,8 @@ function Homescreen(): JSX.Element {
                     setTodoItems(items);
                   });
                 })
-                .catch(error => {                  
-                  setError(error.message); 
+                .catch(error => {
+                  setError(error.message);
                   setModalVisible(true); // Show modal
                 });
             }}

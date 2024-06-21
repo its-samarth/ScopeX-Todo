@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -9,7 +9,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from 'react-native';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faMoon,
   faRightFromBracket,
@@ -27,6 +27,7 @@ import {
 } from '../../helper';
 import UpdateModal from '../components/UpdateModal';
 import globalStyles from '../../styles';
+import Toast from 'react-native-toast-message'; // Import toast library
 
 const colors = {
   blue: '#007AFF',
@@ -56,7 +57,7 @@ const Homescreen = () => {
 
   const handleUpdate = (updatedTitle: string) => {
     if (currentTodoItem) {
-      const updatedItem = {...currentTodoItem, title: updatedTitle};
+      const updatedItem = { ...currentTodoItem, title: updatedTitle };
       updateAndRefresh(updatedItem);
     }
   };
@@ -94,8 +95,9 @@ const Homescreen = () => {
   const deleteAndRefresh = (itemId: string) => {
     deleteTodoItem(itemId)
       .then(() => {
-        setTodoItems(prevItems => prevItems.filter(item => item.id !== itemId));
-        // No need to reset pagination or fetch items again
+        setTodoItems(prevItems =>
+          prevItems.filter(item => item.id !== itemId),
+        );
       })
       .catch(error => {
         console.error('Error deleting todo item:', error);
@@ -127,131 +129,149 @@ const Homescreen = () => {
   const textColor =
     backgroundColor === colors.white ? colors.black : colors.white;
 
-    const renderItem = ({ item }: { item: TodoItem }) => (
-      <View style={styles.todoItem}>
-        <Text
-          style={[
-            styles.sectionDescription,
-            { color: textColor, marginLeft: 10 },
-            globalStyles.text, // Apply global text style here
-          ]}
+  const renderItem = ({ item }: { item: TodoItem }) => (
+    <View style={styles.todoItem}>
+      <Text
+        style={[
+          styles.sectionDescription,
+          { color: textColor, marginLeft: 10 },
+          globalStyles.text, // Apply global text style here
+        ]}
+      >
+        {item.title}
+      </Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <TouchableOpacity
+          style={{ marginRight: 20 }}
+          onPress={() => deleteAndRefresh(item.id)}
         >
-          {item.title}
-        </Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity
-            style={{ marginRight: 20 }}
-            onPress={() => deleteAndRefresh(item.id)}
-          >
-            <FontAwesomeIcon icon={faTrash} size={24} color={colors.red} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{ marginRight: 20 }}
-            onPress={() => openUpdateModal(item)}
-          >
-            <FontAwesomeIcon icon={faEdit} size={24} color={colors.blue} />
-          </TouchableOpacity>
-        </View>
+          <FontAwesomeIcon icon={faTrash} size={24} color={colors.red} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{ marginRight: 20 }}
+          onPress={() => openUpdateModal(item)}
+        >
+          <FontAwesomeIcon icon={faEdit} size={24} color={colors.blue} />
+        </TouchableOpacity>
       </View>
-    );
-  
-    const handleAddTodo = async () => {
-      if (!newTodoItem.trim()) {
-        return; // Prevent adding empty todo item
-      }
-  
-      try {
-        await addTodoItem(newTodoItem.trim());
-        setNewTodoItem('');
-        setTodoItems([]);
-        setCurrentPage(0);
-        setAllItemsLoaded(false);
-        fetchTodoItems(0);
-      } catch (error) {
-        setError(error.message);
-        setModalVisible(true);
-      }
-    };
-  
-    return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor }]}>
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <Text style={[styles.sectionTitle, globalStyles.text, { color: colors.blue }]}>
-              SCOPEX{' '}
-              <Text style={[styles.sectionTitle, globalStyles.text, { color: textColor }]}>
-                TODO
-              </Text>
+    </View>
+  );
+
+  const handleAddTodo = async () => {
+    if (!newTodoItem.trim()) {
+      return; // Prevent adding empty todo item
+    }
+
+    try {
+      await addTodoItem(newTodoItem.trim());
+      setNewTodoItem('');
+      setTodoItems([]);
+      setCurrentPage(0);
+      setAllItemsLoaded(false);
+      fetchTodoItems(0);
+      // Show success toast message
+      Toast.show({
+        type: 'success',
+        text1: 'Todo Added',
+        visibilityTime: 3000,
+        autoHide: true,
+        topOffset: 30,
+      });
+    } catch (error) {
+      setError(error.message);
+      setModalVisible(true);
+      // Show error toast message
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to add todo',
+        visibilityTime: 3000,
+        autoHide: true,
+        topOffset: 30,
+      });
+    }
+  };
+
+  return (
+    <SafeAreaView style={[styles.safeArea, { backgroundColor }]}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={[styles.sectionTitle, globalStyles.text, { color: colors.blue }]}>
+            SCOPEX{' '}
+            <Text style={[styles.sectionTitle, globalStyles.text, { color: textColor }]}>
+              TODO
             </Text>
-            <View style={styles.headerIcons}>
-              <TouchableOpacity onPress={toggleBackgroundColor}>
-                <FontAwesomeIcon
-                  icon={backgroundColor === colors.white ? faSun : faMoon}
-                  size={30}
-                  color={textColor}
-                  style={{ marginRight: 10 }}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <FontAwesomeIcon
-                  icon={faRightFromBracket}
-                  size={20}
-                  color={colors.black}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-  
-          <FlatList
-            data={todoItems}
-            renderItem={renderItem}
-            keyExtractor={item => item.id}
-            contentContainerStyle={styles.flatListContainer}
-            onEndReached={() => fetchTodoItems(currentPage + 1)}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={
-              loading ? (
-                <ActivityIndicator size="large" color={colors.blue} />
-              ) : null
-            }
-          />
-  
-          <View style={styles.bottomContainer}>
-            <TextInput
-              style={[
-                styles.sectionDescription,
-                { color: textColor, fontSize: 22, fontStyle: 'italic' },
-                globalStyles.text, // Apply global text style here
-              ]}
-              placeholder="Add your to-do item(s)"
-              placeholderTextColor={textColor}
-              onChangeText={text => setNewTodoItem(text)}
-              value={newTodoItem}
-            />
-  
-            <TouchableOpacity style={styles.button} onPress={handleAddTodo}>
-              <Text style={[styles.buttonText, globalStyles.text]}>Add</Text>
+          </Text>
+          <View style={styles.headerIcons}>
+            <TouchableOpacity onPress={toggleBackgroundColor}>
+              <FontAwesomeIcon
+                icon={backgroundColor === colors.white ? faSun : faMoon}
+                size={30}
+                color={textColor}
+                style={{ marginRight: 10 }}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <FontAwesomeIcon
+                icon={faRightFromBracket}
+                size={20}
+                color={colors.black}
+              />
             </TouchableOpacity>
           </View>
         </View>
-  
-        <ErrorModal
-          visible={modalVisible}
-          error={error}
-          onClose={() => {
-            setModalVisible(false);
-            setError('');
-          }}
+
+        <FlatList
+          data={todoItems}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          contentContainerStyle={styles.flatListContainer}
+          onEndReached={() => fetchTodoItems(currentPage + 1)}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            loading ? (
+              <ActivityIndicator size="large" color={colors.blue} />
+            ) : null
+          }
         />
-        <UpdateModal
-          visible={isUpdateModalVisible}
-          onClose={() => setIsUpdateModalVisible(false)}
-          onUpdate={handleUpdate}
-          currentTitle={currentTodoItem ? currentTodoItem.title : ''}
-        />
-      </SafeAreaView>
-    );
-  };
+
+        <View style={styles.bottomContainer}>
+          <TextInput
+            style={[
+              styles.sectionDescription,
+              { color: textColor, fontSize: 22, fontStyle: 'italic' },
+              globalStyles.text, // Apply global text style here
+            ]}
+            placeholder="Add your to-do item(s)"
+            placeholderTextColor={textColor}
+            onChangeText={text => setNewTodoItem(text)}
+            value={newTodoItem}
+          />
+
+          <TouchableOpacity style={styles.button} onPress={handleAddTodo}>
+            <Text style={[styles.buttonText, globalStyles.text]}>Add</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <ErrorModal
+        visible={modalVisible}
+        error={error}
+        onClose={() => {
+          setModalVisible(false);
+          setError('');
+        }}
+      />
+      <UpdateModal
+        visible={isUpdateModalVisible}
+        onClose={() => setIsUpdateModalVisible(false)}
+        onUpdate={handleUpdate}
+        currentTitle={currentTodoItem ? currentTodoItem.title : ''}
+      />
+      <Toast ref={(ref) => Toast.setRef(ref)} /> 
+    </SafeAreaView>
+  );
+};
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -299,7 +319,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   buttonText: {
-  fontFamily: 'FiraCode-Regular', 
+    fontFamily: 'FiraCode-Regular',
     color: colors.white,
     fontSize: 18,
     fontWeight: 'bold',
